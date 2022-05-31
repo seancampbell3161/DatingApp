@@ -1,9 +1,10 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Member } from '../_models/member';
+import { PaginatedResult } from '../_models/pagination';
 
 // const httpOptions = {
 //   headers: new HttpHeaders({
@@ -16,37 +17,43 @@ import { Member } from '../_models/member';
 })
 export class MembersService {
 
-  baseUrl = environment.apiUrl;
-
+  private baseUrl = environment.apiUrl;
   public members: Member[] = [];
+  public paginatedResult: PaginatedResult<Member[]> = new PaginatedResult<Member[]>();
 
   constructor(private http: HttpClient) { }
 
-  getMembers() {
-    // see if we already have the members
-    if (this.members.length > 0) return of(this.members);
+  getMembers(page?: number, itemsPerPage?: number) {
+    let params = new HttpParams();
 
-    return this.http.get<Member[]>(this.baseUrl + 'users').pipe(
-      map(members => {
-        this.members = members;
-        return members;
+    if (page !== null && itemsPerPage !== null) {
+      params = params.append('pageNumber', page.toString());
+      params = params.append('pageSize', itemsPerPage.toString());
+    }
+
+    return this.http.get<Member[]>(this.baseUrl + 'users', {observe: 'response', params}).pipe(
+      map(response => {
+        this.paginatedResult.result = response.body;
+        if (response.headers.get('Pagination') !== null) {
+          this.paginatedResult.pagination = JSON.parse(response.headers.get('Pagination'));
+        }
+        return this.paginatedResult;
       })
     )
   }
 
   getMember(username: string) {
-    // see if we already have member
+    // check if already member
     const member = this.members.find(m => m.username === username);
     if (member !== undefined) return of(member);
 
-    // if we don't have the member already
     return this.http.get<Member>(this.baseUrl + 'users/' + username);
   }
 
   updateMember(member: Member) {
     return this.http.put(this.baseUrl + 'users', member).pipe(
       map(() => {
-        // updates our array of users with the current updated user
+        // updates users with the current updated user
         const index =  this.members.indexOf(member);
         this.members[index] = member;
       })
