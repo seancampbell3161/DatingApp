@@ -19,7 +19,8 @@ namespace API.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.NameId, user.UserName) // using the NameId of JWT to store the username of user
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()), // using the NameId of JWT to store the id of user
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
             };
 
             var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
