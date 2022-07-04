@@ -11,12 +11,6 @@ import { UserParams } from '../_models/userParams';
 import { AccountService } from './account.service';
 import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
 
-// const httpOptions = {
-//   headers: new HttpHeaders({
-//     Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user'))?.token
-//   })
-// }
-
 @Injectable({
   providedIn: 'root'
 })

@@ -12,9 +12,10 @@ export class MessagesComponent implements OnInit {
 
   messages: Message[] = [];
   pagination: Pagination;
-  container = 'Outbox';
+  container = 'Unread';
   pageNumber = 1;
   pageSize = 5;
+  loading = false;
 
   constructor(private messageService: MessageService) { }
 
@@ -23,9 +24,11 @@ export class MessagesComponent implements OnInit {
   }
 
   loadMessages() {
+    this.loading = true;
     this.messageService.getMessages(this.pageNumber, this.pageSize, this.container).subscribe(res => {
       this.messages = res.result;
       this.pagination = res.pagination;
+      this.loading = false;
     });
   }
 
@@ -34,6 +37,12 @@ export class MessagesComponent implements OnInit {
       this.pageNumber = event.page;
       this.loadMessages();
     }
+  }
+
+  deleteMessage(id: number) {
+    this.messageService.deleteMessage(id).subscribe(() => {
+      this.messages.splice(this.messages.findIndex(m => m.id === id), 1);
+    });
   }
 
 }
