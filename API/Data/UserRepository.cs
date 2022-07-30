@@ -19,12 +19,25 @@ namespace API.Data
             _mapper = mapper;
         }
 
-        public async Task<MemberDto> GetMemberAsync(string username)
+        public async Task<MemberDto> GetMemberAsync(string username, bool isCurrentUser)
         {
-            return await _context.Users
-                .Where(x => x.UserName == username)
-                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-                .SingleOrDefaultAsync();
+            if (!isCurrentUser)
+            {
+                return await _context.Users
+                    .Where(x => x.UserName == username)
+                    .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+                    .SingleOrDefaultAsync();
+            }
+            else
+            {
+                return await _context.Users
+                    .Where(x => x.UserName == username)
+                    .IgnoreQueryFilters()
+                    .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+                    .SingleOrDefaultAsync();
+            }
+
+            throw new Exception("User not found");
         }
 
         public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
@@ -36,7 +49,7 @@ namespace API.Data
 
             // filter query
             query = query
-                .Where(u => u.UserName != userParams.CurrentUsername)
+                .Where(u => u.UserName.ToLower() != userParams.CurrentUsername.ToLower())
                 .Where(u => u.Gender == userParams.Gender)
                 .Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
 
@@ -53,6 +66,15 @@ namespace API.Data
         public async Task<AppUser> GetUserByIdAsync(int id)
         {
             return await _context.FindAsync<AppUser>(id);
+        }
+
+        public async Task<AppUser> GetUserByPhotoId(int photoId)
+        {
+            return await _context.Users
+                .Include(p => p.Photos)
+                .IgnoreQueryFilters()
+                .Where(p => p.Photos.Any(p => p.Id == photoId))
+                .FirstOrDefaultAsync();
         }
 
         public async Task<AppUser> GetUserByUsernameAsync(string username)

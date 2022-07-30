@@ -1,0 +1,21 @@
+.parent {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.child {
+    width: 20%;
+    box-sizing: border-box;
+}
+
+@media screen and (max-width: 1240px) {
+    .child {
+        width: 25%;
+    }
+}
+
+@media screen and (max-width: 720px) {
+    .child {
+        width: 50%;
+    }
+}

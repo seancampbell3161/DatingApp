@@ -1,14 +1,14 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
     <div class="container">
       <a class="navbar-brand" routerLink="/">Dating App</a>
 
         <ul class="navbar-nav me-auto mb-2 mb-md-0" >
           <ng-container *ngIf="accountService.currentUser$ | async">
             <li class="nav-item">
-              <a class="nav-link" routerLink="/members" routerLinkActive="active">Matches</a>
+              <a class="nav-link" routerLink="/members" routerLinkActive="active">Members</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" routerLink="/lists" routerLinkActive="active">Lists</a>
+              <a class="nav-link" routerLink="/lists" routerLinkActive="active">Likes</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" routerLink="/messages" routerLinkActive="active">Messages</a>
@@ -24,7 +24,7 @@
 
         <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
           <img src="{{user.photoUrl || './assets/user.png'}}" alt="{{user.Username}}">
-            <a class="dropdown-toggle txt-light ml-2" dropdownToggle>Welcome, {{user.knownAs || user.userName | titlecase}}</a>
+            <a class="dropdown-toggle text-dark ml-2" dropdownToggle>Welcome, {{user.knownAs || user.userName | titlecase}}</a>
             <div class="dropdown-menu mt-3" *dropdownMenu>
                 <a routerLink="/member/edit" class="dropdown-item">Edit Profile</a>
                 <div class="dropdown-divider"></div>
@@ -35,7 +35,7 @@
         <form *ngIf="(accountService.currentUser$ | async) === null" #loginForm="ngForm" class="d-flex" (ngSubmit)="login()" autocomplete="off">
           <input name="username" [(ngModel)]="model.username" class="form-control me-2" type="text" placeholder="Username">
           <input name="password" [(ngModel)]="model.password" class="form-control me-2" type="password" placeholder="Password">
-          <button class="btn btn-outline-success" type="submit">Login</button>
+          <button class="btn btn-secondary" type="submit">Login</button>
         </form>
     </div>
   </nav>
