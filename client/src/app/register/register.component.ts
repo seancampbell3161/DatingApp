@@ -55,7 +55,7 @@ export class RegisterComponent implements OnInit {
         this.cancel();
       },
       error => {
-        this.validationErrors = error.error[0];
+        this.validationErrors = error.error;
       }
     );
   }
