@@ -19,20 +19,19 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(error => {
         if (error) {
-          console.log(error);
           switch (error.status) {
             case 400:
               // flatten the array of errors we get back from our validation responses, & push them into an array
-              if (error.error) {
+              if (error.error.errors) {
                 const modalStateErrors = [];
-                for (const key in error.error) { // looping thru the properties of the error.error object
-                  if (error.error[key]) {
-                    modalStateErrors.push(error.error[key])
+                for (const key in error.error.errors) { // looping thru the properties of the error.error object
+                  if (error.error.errors[key]) {
+                    modalStateErrors.push(error.error.errors[key])
                   }
                 }
                 throw modalStateErrors.flat();
               } else {
-                this.toastr.error(error.status, error.statusText);
+                this.toastr.error(error.error, error.status);
               }
               break;
 
