@@ -19,6 +19,7 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(error => {
         if (error) {
+          console.log(`general hit: ${error}`);
           switch (error.status) {
             case 400:
               // flatten the array of errors we get back from our validation responses, & push them into an array
@@ -44,6 +45,7 @@ export class ErrorInterceptor implements HttpInterceptor {
               break;
             
             case 500:
+              console.log(`500 hit: ${error}`);
               const navigationExtras: NavigationExtras = { state: {error: error.error} };
               this.router.navigateByUrl('/server-error', navigationExtras);
               break;
